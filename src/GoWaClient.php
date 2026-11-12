@@ -120,6 +120,12 @@ final class GoWaClient
         return self::normalizeStatus($this->status(), $this->deviceId);
     }
 
+    /**
+     * @psalm-taint-escape ssrf
+     * @psalm-taint-escape file
+     * @psalm-taint-escape url_component
+     * @psalm-taint-escape url_path
+     */
     public static function qrFilename(array $response): string
     {
         if (($response['code'] ?? '') !== 'SUCCESS') {
