@@ -2,7 +2,7 @@
   "id": "whatsapp-gowa",
   "name": "WhatsApp (GoWA)",
   "description": "Admin-only WhatsApp sending and session pairing via Go WhatsApp.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Vitor Mattos",
   "authorUrl": "https://github.com/vitormattos",
   "type": "community",
@@ -19,7 +19,7 @@
     {"key":"sendingEnabled","label":"Allow message sending","type":"boolean","default":false,"help":"Explicit opt-in, disabled by default"}
   ],
   "menuItems": [
-    {"parent":"admin","label":"WhatsApp","url":"/plugins/whatsapp-gowa/manage","icon":"fa-brands fa-whatsapp","permission":"bAdmin"}
+    {"parent":"admin","label":"WhatsApp","url":"plugins/whatsapp-gowa/manage","icon":"fa-brands fa-whatsapp","permission":"bAdmin"}
   ],
   "hasTest": true
 }
