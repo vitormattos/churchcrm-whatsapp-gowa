@@ -1,6 +1,7 @@
 {
   "id": "whatsapp-gowa",
   "name": "WhatsApp (GoWA)",
+  "license": "AGPL-3.0-or-later",
   "description": "Admin-only WhatsApp sending and session pairing via Go WhatsApp.",
   "version": "0.1.2",
   "author": "Vitor Mattos",

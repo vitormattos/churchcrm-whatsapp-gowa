@@ -1,6 +1,10 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * SPDX-FileCopyrightText: 2026 Vitor Mattos
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 namespace ChurchCRM\Plugins\WhatsAppGowa;
 
@@ -46,10 +50,9 @@ final class WhatsAppGowaPlugin extends AbstractPlugin
         return json_decode((string) file_get_contents(__DIR__ . '/../plugin.json'), true, 512, JSON_THROW_ON_ERROR)['menuItems'];
     }
 
-    public function boot(): void {}
-    public function activate(): void {}
-    public function deactivate(): void {}
-    public function uninstall(): void {}
+    public function boot(): void
+    {
+    }
 
     public function isConfigured(): bool
     {
@@ -62,16 +65,22 @@ final class WhatsAppGowaPlugin extends AbstractPlugin
     {
         try {
             $client = new GoWaClient(
-                (string) (($settings['apiBaseUrl'] ?? '') ?: $this->getConfigValue('apiBaseUrl')),
-                (string) (($settings['apiUser'] ?? '') ?: $this->getConfigValue('apiUser')),
-                (string) (($settings['apiPassword'] ?? '') ?: $this->getConfigValue('apiPassword')),
-                (string) ($settings['deviceId'] ?? $this->getConfigValue('deviceId')),
+                $this->settingOrConfigured($settings, 'apiBaseUrl'),
+                $this->settingOrConfigured($settings, 'apiUser'),
+                $this->settingOrConfigured($settings, 'apiPassword'),
+                $this->settingOrConfigured($settings, 'deviceId'),
             );
             $client->status();
             return ['success' => true, 'message' => 'GoWA API reachable'];
         } catch (\Throwable $error) {
             return ['success' => false, 'message' => 'GoWA connection failed'];
         }
+    }
+
+    private function settingOrConfigured(array $settings, string $key): string
+    {
+        $value = $settings[$key] ?? null;
+        return is_string($value) && $value !== '' ? $value : $this->getConfigValue($key);
     }
 
     public function client(): GoWaClient
@@ -111,7 +120,7 @@ final class WhatsAppGowaPlugin extends AbstractPlugin
     public function formatPhone(string $phone): string
     {
         $phone = preg_replace('/[^0-9]/', '', $phone);
-        if (strlen($phone) < 10 || strlen($phone) > 15) {
+        if ($phone === null || strlen($phone) < 10 || strlen($phone) > 15) {
             throw new \InvalidArgumentException('Phone must contain 10 to 15 digits including country code');
         }
         return $phone;

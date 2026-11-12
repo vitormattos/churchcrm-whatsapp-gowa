@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Vitor Mattos
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 'use strict';
 
 const assert = require('node:assert/strict');
@@ -6,9 +9,11 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 
 async function main() {
-  const viewPath = path.join(__dirname, '../views/manage.php');
+  const viewPath = path.join(__dirname, '../../views/manage.php');
   const markup = fs.readFileSync(viewPath, 'utf8').replace(/<\?php[\s\S]*?\?>/g, '');
-  const browser = await chromium.launch({ channel: 'chrome', headless: true });
+  const browser = await chromium.launch(process.env.PLAYWRIGHT_USE_SYSTEM_CHROME === '1'
+    ? { channel: 'chrome', headless: true }
+    : { headless: true });
   try {
     const page = await browser.newPage();
     const runtimeErrors = [];

@@ -1,6 +1,11 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * SPDX-FileCopyrightText: 2026 Vitor Mattos
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 
 use PHPUnit\Framework\TestCase;
 
@@ -9,7 +14,7 @@ final class NavigationMenuTest extends TestCase
     public function testMenuPathIsRelativeToTheChurchCrmRoot(): void
     {
         $manifest = json_decode(
-            file_get_contents(__DIR__ . '/../plugin.json'),
+            file_get_contents(__DIR__ . '/../../../plugin.json'),
             true,
             512,
             JSON_THROW_ON_ERROR,

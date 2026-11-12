@@ -3,3 +3,10 @@
 /.phpunit.cache/
 /playwright-report/
 /test-results/
+/vendor-bin/*/vendor/
+/vendor-bin/*/.phpunit.cache/
+/.php-cs-fixer.cache
+/.psalm-cache/
+/.phpunit.cache/
+/tests/php/.phpunit.result.cache
+/vendor-bin/*/.phpunit.result.cache

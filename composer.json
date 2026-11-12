@@ -2,7 +2,32 @@
   "name": "vitormattos/churchcrm-whatsapp-gowa",
   "description": "ChurchCRM community WhatsApp GoWA plugin",
   "type": "project",
-  "license": "MIT",
-  "require-dev": {"phpunit/phpunit": "^11.5"},
-  "scripts": {"test": "phpunit --bootstrap tests/bootstrap.php tests"}
+  "license": "AGPL-3.0-or-later",
+  "require-dev": {
+    "bamarni/composer-bin-plugin": "^1.8"
+  },
+  "config": {
+    "allow-plugins": {
+      "bamarni/composer-bin-plugin": true
+    },
+    "sort-packages": true,
+    "platform": {
+      "php": "8.4.3"
+    }
+  },
+  "extra": {
+    "bamarni-bin": {
+      "bin-links": true,
+      "forward-command": true
+    }
+  },
+  "scripts": {
+    "post-install-cmd": "@composer bin all install --ansi",
+    "post-update-cmd": "@composer bin all install --ansi",
+    "test:unit": "vendor/bin/phpunit -c tests/php/phpunit.xml --testsuite unit --no-coverage",
+    "psalm": "vendor/bin/psalm --no-cache --threads=1",
+    "cs:check": "vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no",
+    "cs:fix": "vendor/bin/php-cs-fixer fix --using-cache=no",
+    "lint:php": "find src routes tests/php -name '*.php' -exec php -l {} \\;"
+  }
 }

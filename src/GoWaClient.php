@@ -1,6 +1,10 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * SPDX-FileCopyrightText: 2026 Vitor Mattos
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 
 namespace ChurchCRM\Plugins\WhatsAppGowa;
 
@@ -13,13 +17,13 @@ final class GoWaClient
         private readonly string $deviceId = '',
     ) {
         $parts = parse_url($baseUrl);
-        if (!$parts || !in_array($parts['scheme'] ?? '', ['http', 'https'], true)
-            || empty($parts['host']) || isset($parts['user']) || isset($parts['pass'])
+        if ($parts === false || !in_array($parts['scheme'] ?? '', ['http', 'https'], true)
+            || ($parts['host'] ?? '') === '' || isset($parts['user']) || isset($parts['pass'])
             || isset($parts['query']) || isset($parts['fragment'])
         ) {
             throw new \InvalidArgumentException('Invalid GoWA API URL');
         }
-        if (($parts['scheme'] ?? '') !== 'https' && !self::isPrivateHost($parts['host'])) {
+        if (($parts['scheme'] ?? '') !== 'https' && !self::isPrivateHost($parts['host'] ?? '')) {
             throw new \InvalidArgumentException('Public GoWA API URLs must use HTTPS');
         }
     }
@@ -38,6 +42,9 @@ final class GoWaClient
     public function request(string $method, string $path, ?array $payload = null): array
     {
         $ch = curl_init(rtrim($this->baseUrl, '/') . $path);
+        if ($ch === false) {
+            throw new \RuntimeException('Could not initialize GoWA connection');
+        }
         $headers = ['Accept: application/json'];
         if ($this->deviceId !== '') {
             $headers[] = 'X-Device-Id: ' . $this->deviceId;
@@ -62,7 +69,7 @@ final class GoWaClient
         try {
             $raw = curl_exec($ch);
             $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-            if ($raw === false || $status < 200 || $status >= 300) {
+            if (!is_string($raw) || $status < 200 || $status >= 300) {
                 throw new \RuntimeException('GoWA request failed (HTTP ' . $status . ')');
             }
             $result = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
@@ -143,6 +150,9 @@ final class GoWaClient
             throw new \InvalidArgumentException('Invalid QR image filename');
         }
         $ch = curl_init(rtrim($this->baseUrl, '/') . '/statics/qrcode/' . $filename);
+        if ($ch === false) {
+            throw new \RuntimeException('Could not initialize GoWA connection');
+        }
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
@@ -155,7 +165,10 @@ final class GoWaClient
         try {
             $image = curl_exec($ch);
             $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-            if ($image === false || $status !== 200 || strlen($image) > 1024 * 1024
+            if (!is_string($image)) {
+                throw new \RuntimeException('QR image unavailable');
+            }
+            if ($status !== 200 || strlen($image) > 1024 * 1024
                 || !str_starts_with($image, "\x89PNG\r\n\x1a\n")) {
                 throw new \RuntimeException('QR image unavailable');
             }

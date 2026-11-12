@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2026 Vitor Mattos
+# SPDX-License-Identifier: AGPL-3.0-or-later
+version = 1
+SPDX-PackageName = "churchcrm-whatsapp-gowa"
+SPDX-PackageSupplier = "Vitor Mattos <1079143+vitormattos@users.noreply.github.com>"
+SPDX-PackageDownloadLocation = "https://github.com/vitormattos/churchcrm-whatsapp-gowa"
+default-license = "AGPL-3.0-or-later"
+default-copyright = "2026 Vitor Mattos"
+
+[[annotations]]
+path = ["composer.json", "composer.lock", "package.json", "package-lock.json", "plugin.json", "tests/php/phpunit.xml", "psalm.xml", "vendor-bin/*/composer.json", "vendor-bin/*/composer.lock", ".gitignore"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Vitor Mattos"
+SPDX-License-Identifier = "AGPL-3.0-or-later"

@@ -1,23 +1,46 @@
-# ChurchCRM WhatsApp (GoWA)
+<!--
+SPDX-FileCopyrightText: 2026 Vitor Mattos
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 
-Community plugin for ChurchCRM 7.x. Integrates the Go WhatsApp Web Multidevice REST API with an admin-only setup and send page, without changes to ChurchCRM core.
+# WhatsApp for ChurchCRM (GoWA)
 
-## Installation
+**Send opted-in WhatsApp messages from ChurchCRM, using your own WhatsApp account and a self-hosted GoWA gateway.** The plugin adds an administrator-only screen for checking the connection, pairing a device with a QR code, and sending an individual message.
 
-Copy this directory to `src/plugins/community/whatsapp-gowa`. The web service must retain this directory across image upgrades. Visit **Admin > Plugins** and enable **WhatsApp (GoWA)**, then configure the gateway URL, API username and password, and optional device ID. Supply a dedicated self-hosted GoWA instance reachable on the Docker network. **Do not expose its HTTP port publicly.** Configure `sendingEnabled` only after pairing and testing.
+[![PHPUnit](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/phpunit.yml/badge.svg)](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/phpunit.yml)
+[![Psalm](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/psalm.yml/badge.svg)](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/psalm.yml)
+[![PHP-CS-Fixer](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/php-cs-fixer.yml/badge.svg)](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/php-cs-fixer.yml)
+[![REUSE](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/reuse.yml/badge.svg)](https://github.com/vitormattos/churchcrm-whatsapp-gowa/actions/workflows/reuse.yml)
 
-For a new GoWA v8/v9 installation, first click **Register device** (creates `churchcrm` once), then **Show pairing QR** under **Admin > WhatsApp**. The QR image is returned through an authenticated, no-cache admin API; gateway credentials and internal URLs are never sent to the browser. The supported GoWA API returns a `/statics/qrcode/*.png` image link, which the backend fetches and returns as a short-lived inline PNG to the authenticated administrator.
+> [!IMPORTANT]
+> **Help keep this integration maintained.** Every release requires compatibility work, security reviews, tests, documentation and support for changes to ChurchCRM and GoWA. If the plugin saves you time, consider [**sponsoring Vitor Mattos on GitHub**](https://github.com/sponsors/vitormattos). Your contribution helps fund ongoing maintenance and new features. Sponsorship is voluntary; the plugin remains free to use and modify.
 
-The connection screen shows a human-readable online status, detects existing devices and displays the pairing QR directly in the browser. Refresh the QR if it expires. Messages are sent only one at a time and require consent confirmation per recipient. There is no automatic retry, mass campaign scheduler, or contact import in this initial release. A transport timeout is ambiguous: confirm upstream delivery before resubmitting. GoWA uses the unofficial WhatsApp Web protocol, which may cause restrictions or service disruption; obtain consent and respect messaging policies and applicable data-protection obligations.
+## What you can do
 
-## Gateway
+- Configure a self-hosted GoWA (Go WhatsApp Web Multidevice) service without storing credentials in your browser.
+- Register a dedicated gateway device and display its short-lived WhatsApp pairing QR code inside ChurchCRM.
+- Check connection and login status in a human-readable administration page.
+- Send an **individual** WhatsApp message to a recipient who has consented, when an administrator explicitly enables sending.
+- Keep GoWA and ChurchCRM in separate containers and update the plugin without modifying ChurchCRM core.
 
-A compatible server is `ghcr.io/aldinokemal/go-whatsapp-web-multidevice`, using `APP_BASIC_AUTH` and a persistent volume for `/app/storages`. Use a dedicated WhatsApp account. Limit network ingress and back up session storage securely.
+## Status and limitations
 
-## Development
+**Early release / administrator-managed integration.** Bulk campaigns, member/group selection, scheduled messages, delivery histories and automatic retries are **not yet implemented**. No messages are sent automatically. GoWA uses an **unofficial WhatsApp Web integration**, which may be blocked or break after WhatsApp changes; there are no guarantees of account availability. Use only with consent, respect applicable privacy rules and WhatsApp policies, and avoid unsolicited messages.
 
-The plugin follows ChurchCRM `plugin.json`, `AbstractPlugin`, `routesFile`, and the built-in admin route authorization patterns. See `tests` for isolated client/protocol checks and browser UI regression tests. Run `composer test` for PHP and `npm ci && npm run test:ui` for the UI (requires Chrome). Secrets are stored in ChurchCRM's existing plugin configuration; do not commit production configuration to Git.
+## Installation and operation
 
-## License
+| Guide | What it covers |
+| --- | --- |
+| [Install the ChurchCRM plugin](docs/installation.md) | Requirements, plugin deployment, persistent mount, activation |
+| [Set up GoWA](docs/gateway.md) | Private Docker network, configuration, secrets, storage and QR pairing |
+| [Configure ChurchCRM](docs/configuration.md) | Plugin settings, device registration, sending a test message |
+| [Operations and troubleshooting](docs/operations.md) | Logs, upgrades, backups, troubleshooting and security |
+| [Development and tests](docs/development.md) | PHPUnit, browser tests, isolated PHP tools, linting, CI |
 
-MIT. Based on API interoperability with the upstream GoWA project; no upstream source code is vendored.
+**Requirements:** ChurchCRM 7.x, PHP 8.4+ with cURL, a GoWA REST server reachable by ChurchCRM, and a dedicated WhatsApp account/number. The plugin does not require installing Composer dependencies on the production server.
+
+## Support ongoing development
+
+This project is independently maintained by **Vitor Mattos**. Sponsorship pays for the ongoing maintenance and testing work needed to keep an open-source integration useful. If your church or organization relies on it, [**become a GitHub Sponsor**](https://github.com/sponsors/vitormattos) or contribute a focused issue, documentation improvement or pull request.
+
+Contributions and bug reports are welcome through [GitHub Issues](https://github.com/vitormattos/churchcrm-whatsapp-gowa/issues). Do not submit QR codes, session data, API passwords, phone numbers or other personal information in issues or logs.
