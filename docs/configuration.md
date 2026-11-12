@@ -9,7 +9,7 @@ After [installing the plugin](installation.md) and [starting GoWA](gateway.md):
 
 1. Open **Administration → Plugins → WhatsApp (GoWA)**.
 2. Enter the GoWA API URL (`http://whatsapp-gowa:3000` for the example private Docker network), username and password from the gateway's `.env`.
-3. Optionally configure the device identifier (`churchcrm` when registered) and the default country calling code (`55` for Brazil).
+3. Optionally configure the device identifier (`churchcrm` when registered). Supply a full country calling code with each recipient number (for example, `55` for Brazil); the plugin does not guess the country from ChurchCRM contacts.
 4. Save and use the plugin's **connection test**. It verifies API reachability, not WhatsApp pairing.
 5. Open **WhatsApp** in the administration menu. The page displays the gateway's current status.
 

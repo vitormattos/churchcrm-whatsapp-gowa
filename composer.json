@@ -24,7 +24,7 @@
   "scripts": {
     "post-install-cmd": "@composer bin all install --ansi",
     "post-update-cmd": "@composer bin all install --ansi",
-    "test:unit": "vendor/bin/phpunit -c tests/php/phpunit.xml --testsuite unit --no-coverage",
+    "test:unit": "vendor/bin/phpunit -c tests/php/phpunit.xml --testsuite unit --no-coverage --do-not-record-test-run-history",
     "psalm": "vendor/bin/psalm --no-cache --threads=1",
     "cs:check": "vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no",
     "cs:fix": "vendor/bin/php-cs-fixer fix --using-cache=no",

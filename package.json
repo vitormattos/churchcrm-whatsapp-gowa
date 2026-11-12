@@ -2,6 +2,11 @@
   "name": "churchcrm-whatsapp-gowa-ui-tests",
   "private": true,
   "version": "0.1.1",
-  "scripts": {"test:ui": "node tests/ui/browser-ui.cjs"},
-  "devDependencies": {"playwright": "1.65.0"}
+  "scripts": {
+    "test:ui": "node tests/ui/i18n-test.cjs && node tests/ui/browser-ui.cjs",
+    "test:i18n": "node tests/ui/i18n-test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.65.0"
+  }
 }

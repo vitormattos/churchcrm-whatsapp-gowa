@@ -31,6 +31,12 @@ final class GoWaClientTest extends TestCase
         self::assertInstanceOf(GoWaClient::class, new GoWaClient('http://whatsapp-gowa:3000', 'user', 'secret'));
     }
 
+    public function testRejectsHeaderInjectionThroughDeviceId(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        new GoWaClient('http://whatsapp-gowa:3000', 'user', 'secret', "device\r\nInjected: true");
+    }
+
     public function testRejectsInvalidSchemes(): void
     {
         $this->expectException(InvalidArgumentException::class);

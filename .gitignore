@@ -10,3 +10,5 @@
 /.phpunit.cache/
 /tests/php/.phpunit.result.cache
 /vendor-bin/*/.phpunit.result.cache
+
+/dist/

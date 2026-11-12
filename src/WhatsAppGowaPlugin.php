@@ -32,22 +32,35 @@ final class WhatsAppGowaPlugin extends AbstractPlugin
 
     public function getName(): string
     {
-        return 'WhatsApp (GoWA)';
+        return dgettext('whatsapp-gowa', 'WhatsApp (GoWA)');
     }
 
     public function getDescription(): string
     {
-        return 'Send opted-in WhatsApp messages using a self-hosted GoWA gateway.';
+        return dgettext('whatsapp-gowa', 'Send opted-in WhatsApp messages using a self-hosted GoWA gateway.');
     }
 
     public function getSettingsSchema(): array
     {
-        return json_decode((string) file_get_contents(__DIR__ . '/../plugin.json'), true, 512, JSON_THROW_ON_ERROR)['settings'];
+        $settings = json_decode((string) file_get_contents(__DIR__ . '/../plugin.json'), true, 512, JSON_THROW_ON_ERROR)['settings'];
+        foreach ($settings as &$setting) {
+            $setting['label'] = dgettext('whatsapp-gowa', $setting['label']);
+            if (isset($setting['help'])) {
+                $setting['help'] = dgettext('whatsapp-gowa', $setting['help']);
+            }
+        }
+        unset($setting);
+        return $settings;
     }
 
     public function getMenuItems(): array
     {
-        return json_decode((string) file_get_contents(__DIR__ . '/../plugin.json'), true, 512, JSON_THROW_ON_ERROR)['menuItems'];
+        $items = json_decode((string) file_get_contents(__DIR__ . '/../plugin.json'), true, 512, JSON_THROW_ON_ERROR)['menuItems'];
+        foreach ($items as &$item) {
+            $item['label'] = dgettext('whatsapp-gowa', $item['label']);
+        }
+        unset($item);
+        return $items;
     }
 
     public function boot(): void
@@ -70,7 +83,10 @@ final class WhatsAppGowaPlugin extends AbstractPlugin
                 $this->settingOrConfigured($settings, 'apiPassword'),
                 $this->settingOrConfigured($settings, 'deviceId'),
             );
-            $client->status();
+            $status = $client->status();
+            if (($status['code'] ?? '') !== 'SUCCESS') {
+                throw new \RuntimeException('GoWA returned an unsuccessful status');
+            }
             return ['success' => true, 'message' => 'GoWA API reachable'];
         } catch (\Throwable $error) {
             return ['success' => false, 'message' => 'GoWA connection failed'];

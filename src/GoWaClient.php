@@ -16,6 +16,9 @@ final class GoWaClient
         private readonly string $password,
         private readonly string $deviceId = '',
     ) {
+        if ($deviceId !== '' && !preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,30}$/D', $deviceId)) {
+            throw new \InvalidArgumentException('Invalid GoWA device ID');
+        }
         $parts = parse_url($baseUrl);
         if ($parts === false || !in_array($parts['scheme'] ?? '', ['http', 'https'], true)
             || ($parts['host'] ?? '') === '' || isset($parts['user']) || isset($parts['pass'])

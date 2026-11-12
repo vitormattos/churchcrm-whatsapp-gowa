@@ -16,6 +16,10 @@ The integration is an external **community plugin**; no changes to ChurchCRM cor
 
 ## 1. Install the plugin
 
+Once this plugin is included in the official ChurchCRM registry, go to **Administration → Plugins → Browse Community Plugins**, review the listed capabilities and click **Install**. The installer verifies the release ZIP checksum. You must still provision GoWA yourself using [the gateway guide](gateway.md); installing the plugin does not deploy the GoWA service.
+
+Alternatively, developers can install from Git as follows.
+
 On a regular PHP installation, clone the repository as a child of ChurchCRM's `src/plugins/community` directory:
 
 ```bash

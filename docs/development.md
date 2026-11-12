@@ -40,6 +40,10 @@ To install a single isolated PHP tool without installing all three, use `compose
 
 `cs:fix` modifies local PHP code; use `composer run cs:fix` before reviewing the diff. PHPUnit, Psalm, PHP-CS-Fixer, browser tests and REUSE checks run separately in CI. Psalm focuses on the plugin's PHP services; framework API types are modelled with a small local stub instead of pulling ChurchCRM's entire application into the analyzer.
 
+## Translation coverage
+
+The plugin follows ChurchCRM plugin-local localization. The administration page uses `window.CRM.plugins['whatsapp-gowa'].i18n` with English fallback; English and Brazilian Portuguese dictionaries live in `locale/i18n/`. Authentication-sensitive POST routes use ChurchCRM CSRF middleware and the form carries a session-bound token. PHP route responses use the `whatsapp-gowa` gettext domain with compiled `.mo` files under `locale/textdomain/`. Add keys to both locales and run `npm run test:i18n` before publishing.
+
 ## New tests
 
 Add isolated PHP tests in `tests/php/Unit/` and browser behavior regressions in `tests/ui/`. Tests should never contact real WhatsApp accounts or send messages. End-to-end tests against a paired device are manual and must use a dedicated test account. Maintain SPDX headers or REUSE annotations on new files.

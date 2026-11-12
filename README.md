@@ -23,6 +23,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 - Send an **individual** WhatsApp message to a recipient who has consented, when an administrator explicitly enables sending.
 - Keep GoWA and ChurchCRM in separate containers and update the plugin without modifying ChurchCRM core.
 
+## Security and vulnerability reporting
+
+See [SECURITY.md](SECURITY.md) to report vulnerabilities privately. Never post credentials, QR codes, session data, phone numbers or message text.
+
 ## Status and limitations
 
 **Early release / administrator-managed integration.** Bulk campaigns, member/group selection, scheduled messages, delivery histories and automatic retries are **not yet implemented**. No messages are sent automatically. GoWA uses an **unofficial WhatsApp Web integration**, which may be blocked or break after WhatsApp changes; there are no guarantees of account availability. Use only with consent, respect applicable privacy rules and WhatsApp policies, and avoid unsolicited messages.
@@ -36,6 +40,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 | [Configure ChurchCRM](docs/configuration.md) | Plugin settings, device registration, sending a test message |
 | [Operations and troubleshooting](docs/operations.md) | Logs, upgrades, backups, troubleshooting and security |
 | [Development and tests](docs/development.md) | PHPUnit, browser tests, isolated PHP tools, linting, CI |
+| [Security and capability review](docs/security-audit.md) | Threat boundaries, permissions, risk classification and mitigations |
 
 **Requirements:** ChurchCRM 7.x, PHP 8.4+ with cURL, a GoWA REST server reachable by ChurchCRM, and a dedicated WhatsApp account/number. The plugin does not require installing Composer dependencies on the production server.
 
