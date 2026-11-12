@@ -32,6 +32,14 @@ $app->group('/whatsapp-gowa/api', function (RouteCollectorProxy $group) use ($pl
         }
     });
 
+    $group->post('/register-device', function (Request $request, Response $response) use ($plugin): Response {
+        try {
+            return SlimUtils::renderJSON($response, ['success' => true, 'data' => $plugin->registerDevice()]);
+        } catch (\Throwable $error) {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Device registration failed or already configured'], 409);
+        }
+    });
+
     $group->get('/qr', function (Request $request, Response $response) use ($plugin): Response {
         try {
             return SlimUtils::renderJSON($response, ['success' => true, 'data' => $plugin->client()->qr()]);

@@ -6,7 +6,7 @@ Community plugin for ChurchCRM 7.x. Integrates the Go WhatsApp Web Multidevice R
 
 Copy this directory to `src/plugins/community/whatsapp-gowa`. The web service must retain this directory across image upgrades. Visit **Admin > Plugins** and enable **WhatsApp (GoWA)**, then configure the gateway URL, API username and password, and optional device ID. Supply a dedicated self-hosted GoWA instance reachable on the Docker network. **Do not expose its HTTP port publicly.** Configure `sendingEnabled` only after pairing and testing.
 
-Pair using **Admin > WhatsApp > Show pairing QR**. The QR endpoint is proxied through an authenticated admin route. GoWA response formats differ between versions; current UI accepts a PNG/JPEG data URI or the standard GoWA `/statics/qrcode/*.png` link, proxied with administrator authorization.
+For a new GoWA v8/v9 installation, first click **Register device** (creates `churchcrm` once), then **Show pairing QR** under **Admin > WhatsApp**. The QR endpoint is proxied through an authenticated admin route. GoWA response formats differ between versions; current UI accepts a PNG/JPEG data URI or the standard GoWA `/statics/qrcode/*.png` link, proxied with administrator authorization.
 
 Messages are sent only one at a time and require consent confirmation per recipient. There is no automatic retry, mass campaign scheduler, or contact import in this initial release. A transport timeout is ambiguous: confirm upstream delivery before resubmitting. GoWA uses the unofficial WhatsApp Web protocol, which may cause restrictions or service disruption; obtain consent and respect messaging policies and applicable data-protection obligations.
 

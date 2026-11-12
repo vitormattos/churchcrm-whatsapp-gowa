@@ -75,6 +75,14 @@ final class GoWaClient
         }
     }
 
+    public function registerDevice(string $id): array
+    {
+        if (!preg_match('/^[a-z0-9][a-z0-9_-]{1,30}$/D', $id)) {
+            throw new \InvalidArgumentException('Invalid device ID');
+        }
+        return $this->request('POST', '/devices', ['device_id' => $id]);
+    }
+
     public function status(): array
     {
         return $this->request('GET', '/app/status');

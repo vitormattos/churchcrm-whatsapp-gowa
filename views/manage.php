@@ -7,6 +7,7 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
   <div class="card-body">
     <p>Configure the gateway in <a href="<?= htmlspecialchars(SystemURLs::getRootPath(), ENT_QUOTES) ?>/plugins/management">Plugin Management</a>. Only administrators can access this page.</p>
     <button class="btn btn-secondary" id="wa-status" type="button">Check connection</button>
+    <button class="btn btn-secondary" id="wa-register" type="button">Register device</button>
     <button class="btn btn-secondary" id="wa-qr" type="button">Show pairing QR</button>
     <pre id="wa-feedback" class="mt-3" role="status" aria-live="polite"></pre>
     <img id="wa-qr-image" alt="WhatsApp pairing QR code" style="display:none; max-width:300px" />
@@ -38,6 +39,12 @@ require SystemURLs::getDocumentRoot() . '/Include/Header.php';
     try {
       const result = await api('/status');
       feedback.textContent = JSON.stringify(result.data, null, 2);
+    } catch (error) { feedback.textContent = error.message; }
+  });
+  document.getElementById('wa-register').addEventListener('click', async () => {
+    try {
+      const result = await api('/register-device', {method: 'POST'});
+      feedback.textContent = 'Device registered: ' + result.data.deviceId + '. Now show the pairing QR.';
     } catch (error) { feedback.textContent = error.message; }
   });
   document.getElementById('wa-qr').addEventListener('click', async () => {
