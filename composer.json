@@ -1,0 +1,8 @@
+{
+  "name": "vitormattos/churchcrm-whatsapp-gowa",
+  "description": "ChurchCRM community WhatsApp GoWA plugin",
+  "type": "project",
+  "license": "MIT",
+  "require-dev": {"phpunit/phpunit": "^11.5"},
+  "scripts": {"test": "phpunit --bootstrap tests/bootstrap.php tests"}
+}

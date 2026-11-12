@@ -1,0 +1,25 @@
+{
+  "id": "whatsapp-gowa",
+  "name": "WhatsApp (GoWA)",
+  "description": "Admin-only WhatsApp sending and session pairing via Go WhatsApp.",
+  "version": "0.1.0",
+  "author": "Vitor Mattos",
+  "authorUrl": "https://github.com/vitormattos",
+  "type": "community",
+  "minimumCRMVersion": "7.0.0",
+  "mainClass": "ChurchCRM\\Plugins\\WhatsAppGowa\\WhatsAppGowaPlugin",
+  "routesFile": "routes/routes.php",
+  "dependencies": [],
+  "settings": [
+    {"key":"apiBaseUrl","label":"GoWA API URL","type":"text","required":true,"help":"Private gateway URL reachable from ChurchCRM, e.g. http://whatsapp-gowa:3000"},
+    {"key":"apiUser","label":"GoWA API username","type":"text","required":true},
+    {"key":"apiPassword","label":"GoWA API password","type":"password","required":true},
+    {"key":"deviceId","label":"Device ID (optional)","type":"text"},
+    {"key":"defaultCountryCode","label":"Default country calling code","type":"text","help":"e.g. 55 for Brazil"},
+    {"key":"sendingEnabled","label":"Allow message sending","type":"boolean","default":false,"help":"Explicit opt-in, disabled by default"}
+  ],
+  "menuItems": [
+    {"parent":"admin","label":"WhatsApp","url":"/plugins/whatsapp-gowa/manage","icon":"fa-brands fa-whatsapp","permission":"bAdmin"}
+  ],
+  "hasTest": true
+}

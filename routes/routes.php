@@ -1,0 +1,78 @@
+<?php
+
+declare(strict_types=1);
+
+use ChurchCRM\dto\SystemURLs;
+use ChurchCRM\Plugins\WhatsAppGowa\WhatsAppGowaPlugin;
+use ChurchCRM\Slim\Middleware\Request\Auth\AdminRoleAuthMiddleware;
+use ChurchCRM\Slim\SlimUtils;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
+use Slim\Views\PhpRenderer;
+
+$plugin = WhatsAppGowaPlugin::instance();
+if ($plugin === null) {
+    return;
+}
+
+$app->get('/whatsapp-gowa/manage', function (Request $request, Response $response): Response {
+    return (new PhpRenderer(__DIR__ . '/../views/'))->render($response, 'manage.php', [
+        'sRootPath' => SystemURLs::getRootPath(),
+        'sPageTitle' => 'WhatsApp',
+    ]);
+})->add(AdminRoleAuthMiddleware::class);
+
+$app->group('/whatsapp-gowa/api', function (RouteCollectorProxy $group) use ($plugin): void {
+    $group->get('/status', function (Request $request, Response $response) use ($plugin): Response {
+        try {
+            return SlimUtils::renderJSON($response, ['success' => true, 'data' => $plugin->client()->status()]);
+        } catch (\Throwable $error) {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Gateway unavailable'], 503);
+        }
+    });
+
+    $group->get('/qr', function (Request $request, Response $response) use ($plugin): Response {
+        try {
+            return SlimUtils::renderJSON($response, ['success' => true, 'data' => $plugin->client()->qr()]);
+        } catch (\Throwable $error) {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'QR unavailable'], 503);
+        }
+    });
+
+    $group->get('/qr-image', function (Request $request, Response $response) use ($plugin): Response {
+        try {
+            $filename = (string) ($request->getQueryParams()['file'] ?? '');
+            $image = $plugin->client()->qrImage($filename);
+            $response->getBody()->write($image);
+            return $response->withHeader('Content-Type', 'image/png')
+                ->withHeader('Cache-Control', 'no-store')
+                ->withHeader('X-Content-Type-Options', 'nosniff');
+        } catch (\Throwable $error) {
+            return $response->withStatus(404);
+        }
+    });
+
+    $group->post('/send', function (Request $request, Response $response) use ($plugin): Response {
+        if (!$plugin->canSend()) {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Sending is disabled'], 403);
+        }
+        $data = $request->getParsedBody();
+        if (!is_array($data) || ($data['consent'] ?? '') !== 'yes') {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Recipient consent required'], 400);
+        }
+        $message = trim((string) ($data['message'] ?? ''));
+        if ($message === '' || mb_strlen($message) > 2000) {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Message length must be 1-2000 characters'], 400);
+        }
+        try {
+            $number = $plugin->formatPhone((string) ($data['phone'] ?? ''));
+            $result = $plugin->client()->send($number, $message);
+            return SlimUtils::renderJSON($response, ['success' => true, 'messageId' => $result['results']['message_id'] ?? null]);
+        } catch (\InvalidArgumentException $error) {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => $error->getMessage()], 400);
+        } catch (\Throwable $error) {
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Delivery could not be confirmed; do not retry automatically'], 502);
+        }
+    });
+})->add(AdminRoleAuthMiddleware::class);
