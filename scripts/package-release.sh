@@ -23,7 +23,7 @@ trap 'rm -rf "$staging"' EXIT HUP INT TERM
 mkdir -p "$staging/whatsapp-gowa"
 git archive --format=tar "$ref" plugin.json src routes views locale README.md LICENSE SECURITY.md docs \
     | tar -xf - -C "$staging/whatsapp-gowa"
-timestamp=$(git show -s --format=%ct "$ref")
+timestamp=$(git show -s --format=%ct "${ref}^{commit}")
 find "$staging/whatsapp-gowa" -exec touch -h -d "@$timestamp" {} +
 (cd "$staging" && find whatsapp-gowa -type f | LC_ALL=C sort | zip -X -q "$destination/$name" -@)
 (cd "$destination" && sha256sum "$name" > "$name.sha256")
