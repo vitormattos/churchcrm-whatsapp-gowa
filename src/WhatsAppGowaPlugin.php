@@ -90,14 +90,17 @@ final class WhatsAppGowaPlugin extends AbstractPlugin
     public function registerDevice(): array
     {
         if ($this->getConfigValue('deviceId') !== '') {
-            throw new \RuntimeException('A device ID is already configured');
+            return ['deviceId' => $this->getConfigValue('deviceId'), 'alreadyRegistered' => true];
         }
         $result = $this->client()->registerDevice('churchcrm');
         if (($result['code'] ?? '') !== 'SUCCESS') {
             throw new \RuntimeException('Gateway rejected device registration');
         }
         $this->setConfigValue('deviceId', 'churchcrm');
-        return ['deviceId' => 'churchcrm'];
+        if ($this->getConfigValue('deviceId') !== 'churchcrm') {
+            throw new \RuntimeException('Device registration was not saved');
+        }
+        return ['deviceId' => 'churchcrm', 'alreadyRegistered' => false];
     }
 
     public function canSend(): bool

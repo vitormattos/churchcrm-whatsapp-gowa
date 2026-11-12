@@ -26,7 +26,10 @@ $app->get('/whatsapp-gowa/manage', function (Request $request, Response $respons
 $app->group('/whatsapp-gowa/api', function (RouteCollectorProxy $group) use ($plugin): void {
     $group->get('/status', function (Request $request, Response $response) use ($plugin): Response {
         try {
-            return SlimUtils::renderJSON($response, ['success' => true, 'data' => $plugin->client()->status()]);
+            return SlimUtils::renderJSON($response->withHeader('Cache-Control', 'no-store'), [
+                'success' => true,
+                'data' => [...$plugin->client()->connectionStatus(), 'sendingEnabled' => $plugin->canSend()],
+            ]);
         } catch (\Throwable $error) {
             return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Gateway unavailable'], 503);
         }
@@ -36,28 +39,18 @@ $app->group('/whatsapp-gowa/api', function (RouteCollectorProxy $group) use ($pl
         try {
             return SlimUtils::renderJSON($response, ['success' => true, 'data' => $plugin->registerDevice()]);
         } catch (\Throwable $error) {
-            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Device registration failed or already configured'], 409);
+            return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'Nao foi possivel registrar o dispositivo. Confira a API GoWA.'], 409);
         }
     });
 
     $group->get('/qr', function (Request $request, Response $response) use ($plugin): Response {
         try {
-            return SlimUtils::renderJSON($response, ['success' => true, 'data' => $plugin->client()->qr()]);
+            return SlimUtils::renderJSON($response->withHeader('Cache-Control', 'no-store'), [
+                'success' => true,
+                'data' => $plugin->client()->pairingQr(),
+            ]);
         } catch (\Throwable $error) {
             return SlimUtils::renderJSON($response, ['success' => false, 'message' => 'QR unavailable'], 503);
-        }
-    });
-
-    $group->get('/qr-image', function (Request $request, Response $response) use ($plugin): Response {
-        try {
-            $filename = (string) ($request->getQueryParams()['file'] ?? '');
-            $image = $plugin->client()->qrImage($filename);
-            $response->getBody()->write($image);
-            return $response->withHeader('Content-Type', 'image/png')
-                ->withHeader('Cache-Control', 'no-store')
-                ->withHeader('X-Content-Type-Options', 'nosniff');
-        } catch (\Throwable $error) {
-            return $response->withStatus(404);
         }
     });
 

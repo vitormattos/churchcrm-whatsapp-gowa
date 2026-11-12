@@ -93,6 +93,50 @@ final class GoWaClient
         return $this->request('GET', '/app/login');
     }
 
+    public static function normalizeStatus(array $response, string $deviceId): array
+    {
+        if (($response['code'] ?? '') !== 'SUCCESS' || !is_array($response['results'] ?? null)) {
+            throw new \RuntimeException('Could not determine GoWA connection status');
+        }
+
+        $state = $response['results'];
+        return [
+            'deviceId' => $deviceId,
+            'deviceRegistered' => $deviceId !== '',
+            'connected' => ($state['is_connected'] ?? false) === true,
+            'loggedIn' => ($state['is_logged_in'] ?? false) === true,
+        ];
+    }
+
+    public function connectionStatus(): array
+    {
+        return self::normalizeStatus($this->status(), $this->deviceId);
+    }
+
+    public static function qrFilename(array $response): string
+    {
+        if (($response['code'] ?? '') !== 'SUCCESS') {
+            throw new \RuntimeException('GoWA did not create a pairing QR code');
+        }
+
+        $link = $response['results']['qr_link'] ?? null;
+        $path = is_string($link) ? parse_url($link, PHP_URL_PATH) : false;
+        if (!is_string($path) || !preg_match('~^/statics/qrcode/([A-Za-z0-9_-]+\.png)$~D', $path, $matches)) {
+            throw new \RuntimeException('GoWA returned an unsupported QR code URL');
+        }
+        return $matches[1];
+    }
+
+    public function pairingQr(): array
+    {
+        $result = $this->qr();
+        $image = $this->qrImage(self::qrFilename($result));
+        return [
+            'image' => 'data:image/png;base64,' . base64_encode($image),
+            'validForSeconds' => max(1, min(120, (int) ($result['results']['qr_duration'] ?? 30))),
+        ];
+    }
+
     public function qrImage(string $filename): string
     {
         if (!preg_match('/^[A-Za-z0-9_-]+\.png$/D', $filename)) {
