@@ -10,6 +10,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../src/GoWaClient.php';
 
 use ChurchCRM\Plugins\WhatsAppGowa\GoWaClient;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class GoWaProtocolTest extends TestCase
@@ -60,6 +61,25 @@ final class GoWaProtocolTest extends TestCase
             'code' => 'SUCCESS',
             'results' => ['qr_link' => 'https://example.org/../../admin/key.png'],
         ]);
+    }
+
+    #[DataProvider('invalidQrImageLinks')]
+    public function testQrFilenameRejectsUntrustedPathCharacters(string $link): void
+    {
+        $this->expectException(RuntimeException::class);
+        GoWaClient::qrFilename([
+            'code' => 'SUCCESS',
+            'results' => ['qr_link' => $link],
+        ]);
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function invalidQrImageLinks(): iterable
+    {
+        yield 'encoded path traversal' => ['http://whatsapp-gowa:3000/statics/qrcode/%2e%2e%2fsecret.png'];
+        yield 'nested filename' => ['http://whatsapp-gowa:3000/statics/qrcode/private/code.png'];
+        yield 'URL delimiter in filename' => ['http://whatsapp-gowa:3000/statics/qrcode/abc%3ffile.png'];
+        yield 'unexpected extension' => ['http://whatsapp-gowa:3000/statics/qrcode/abc.svg'];
     }
 
     public function testMissingQrImageIsRejected(): void
