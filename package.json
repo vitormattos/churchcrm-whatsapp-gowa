@@ -7,6 +7,6 @@
     "test:i18n": "node tests/ui/i18n-test.cjs"
   },
   "devDependencies": {
-    "playwright": "1.65.0"
+    "playwright": "1.65.1"
   }
 }
